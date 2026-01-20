@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-upload label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #3498db;
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 500;
+        }
+
+        .file-upload label:hover {
+            background: #2980b9;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-name {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .quiz-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 25px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .score-display h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .score-display.excellent {
+            border-left: 5px solid #27ae60;
+        }
+
+        .score-display.good {
+            border-left: 5px solid #f39c12;
+        }
+
+        .score-display.needs-work {
+            border-left: 5px solid #e74c3c;
+        }
+
+        .score-percentage {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .question-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .question-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .question-number {
+            font-size: 0.85rem;
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .answer-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .answer-option:hover {
+            background: #e9ecef;
+        }
+
+        .answer-option input[type="radio"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .answer-option label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .answer-option.selected {
+            border-color: #3498db;
+            background: #ebf5fb;
+        }
+
+        /* Results mode styling */
+        .results-mode .answer-option {
+            cursor: default;
+        }
+
+        .results-mode .answer-option input[type="radio"] {
+            cursor: default;
+        }
+
+        .answer-option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .answer-option.correct::after {
+            content: '✓';
+            margin-left: auto;
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .answer-option.wrong {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .answer-option.wrong::after {
+            content: '✗';
+            margin-left: auto;
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .answer-option.show-correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .answer-option.show-correct::after {
+            content: '← Correct';
+            margin-left: auto;
+            color: #28a745;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: #fff;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .placeholder {
+            text-align: center;
+            padding: 60px 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .placeholder p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .question-card {
+                padding: 15px;
+            }
+
+            .question-text {
+                font-size: 1rem;
+            }
+
+            .answer-option {
+                padding: 10px 12px;
+            }
+
+            .btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+
+            .score-display h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Quiz App</h1>
+            <div class="file-upload">
+                <label for="quiz-file">Load Quiz JSON</label>
+                <input type="file" id="quiz-file" accept=".json">
+                <span class="file-name" id="file-name"></span>
+            </div>
+        </header>
+
+        <main id="quiz-container">
+            <div class="placeholder">
+                <div class="placeholder-icon">📝</div>
+                <p>Load a quiz JSON file to get started</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const state = {
+            quiz: null,
+            originalQuestions: null,
+            answers: {},
+            submitted: false
+        };
+
+        function shuffleArray(array) {
+            const shuffled = array.slice();
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                const temp = shuffled[i];
+                shuffled[i] = shuffled[j];
+                shuffled[j] = temp;
+            }
+            return shuffled;
+        }
+
+        function shuffleQuestion(question) {
+            const correctAnswerText = question.answers[question.correct];
+            const shuffledAnswers = shuffleArray(question.answers);
+            const newCorrectIndex = shuffledAnswers.findIndex(a => a === correctAnswerText);
+            return {
+                id: question.id,
+                question: question.question,
+                answers: shuffledAnswers,
+                correct: newCorrectIndex
+            };
+        }
+
+        function shuffleQuiz(questions) {
+            const shuffledQuestions = shuffleArray(questions);
+            const result = [];
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                result.push(shuffleQuestion(shuffledQuestions[i]));
+            }
+            return result;
+        }
+
+        const fileInput = document.getElementById('quiz-file');
+        const fileNameSpan = document.getElementById('file-name');
+        const quizContainer = document.getElementById('quiz-container');
+
+        fileInput.addEventListener('change', handleFileUpload);
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            fileNameSpan.textContent = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (validateQuizData(data)) {
+                        state.originalQuestions = data.questions.map(q => ({...q, answers: [...q.answers]}));
+                        state.quiz = {
+                            ...data,
+                            questions: shuffleQuiz(data.questions)
+                        };
+                        state.answers = {};
+                        state.submitted = false;
+                        renderQuiz();
+                    }
+                } catch (error) {
+                    showError('Invalid JSON file. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function validateQuizData(data) {
+            if (!data.title || typeof data.title !== 'string') {
+                showError('Quiz must have a title.');
+                return false;
+            }
+            if (!Array.isArray(data.questions) || data.questions.length === 0) {
+                showError('Quiz must have at least one question.');
+                return false;
+            }
+            for (let i = 0; i < data.questions.length; i++) {
+                const q = data.questions[i];
+                if (!q.question || !Array.isArray(q.answers) || q.answers.length < 2) {
+                    showError(`Question ${i + 1} is invalid. Each question needs text and at least 2 answers.`);
+                    return false;
+                }
+                if (typeof q.correct !== 'number' || q.correct < 0 || q.correct >= q.answers.length) {
+                    showError(`Question ${i + 1} has an invalid correct answer index.`);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function showError(message) {
+            quizContainer.innerHTML = `
+                <div class="error-message">${message}</div>
+                <div class="placeholder">
+                    <div class="placeholder-icon">📝</div>
+                    <p>Load a valid quiz JSON file to get started</p>
+                </div>
+            `;
+        }
+
+        function renderQuiz() {
+            const { quiz, submitted } = state;
+
+            let html = `<h2 class="quiz-title">${escapeHtml(quiz.title)}</h2>`;
+
+            if (submitted) {
+                html += renderResults();
+            }
+
+            html += `<div class="${submitted ? 'results-mode' : ''}">`;
+
+            quiz.questions.forEach((q, qIndex) => {
+                html += renderQuestion(q, qIndex);
+            });
+
+            html += '</div>';
+
+            if (submitted) {
+                html += `
+                    <div class="button-container">
+                        <button class="btn btn-success" onclick="retakeQuiz()">Retake Quiz</button>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="button-container">
+                        <button class="btn btn-primary" onclick="submitQuiz()">Submit Answers</button>
+                    </div>
+                `;
+            }
+
+            quizContainer.innerHTML = html;
+
+            if (!submitted) {
+                setupAnswerListeners();
+            }
+        }
+
+        function renderQuestion(q, qIndex) {
+            const questionId = q.id || qIndex + 1;
+            const selectedAnswer = state.answers[qIndex];
+            const { submitted } = state;
+
+            let html = `
+                <div class="question-card">
+                    <div class="question-number">Question ${qIndex + 1}</div>
+                    <div class="question-text">${escapeHtml(q.question)}</div>
+                    <div class="answers">
+            `;
+
+            q.answers.forEach((answer, aIndex) => {
+                let classes = 'answer-option';
+
+                if (submitted) {
+                    if (aIndex === q.correct) {
+                        classes += ' correct';
+                    } else if (selectedAnswer === aIndex && aIndex !== q.correct) {
+                        classes += ' wrong';
+                    }
+                    if (selectedAnswer !== aIndex && aIndex === q.correct && selectedAnswer !== undefined) {
+                        classes += ' show-correct';
+                    }
+                } else if (selectedAnswer === aIndex) {
+                    classes += ' selected';
+                }
+
+                const checked = selectedAnswer === aIndex ? 'checked' : '';
+                const disabled = submitted ? 'disabled' : '';
+
+                html += `
+                    <div class="${classes}" data-question="${qIndex}" data-answer="${aIndex}">
+                        <input type="radio" name="q${qIndex}" id="q${qIndex}a${aIndex}"
+                               value="${aIndex}" ${checked} ${disabled}>
+                        <label for="q${qIndex}a${aIndex}">${escapeHtml(answer)}</label>
+                    </div>
+                `;
+            });
+
+            html += '</div></div>';
+            return html;
+        }
+
+        function renderResults() {
+            const { quiz, answers } = state;
+            let correct = 0;
+
+            quiz.questions.forEach((q, qIndex) => {
+                if (answers[qIndex] === q.correct) {
+                    correct++;
+                }
+            });
+
+            const total = quiz.questions.length;
+            const percentage = Math.round((correct / total) * 100);
+
+            let scoreClass = 'needs-work';
+            if (percentage >= 80) scoreClass = 'excellent';
+            else if (percentage >= 60) scoreClass = 'good';
+
+            return `
+                <div class="score-display ${scoreClass}">
+                    <h2>Score: ${correct} / ${total}</h2>
+                    <div class="score-percentage">${percentage}% correct</div>
+                </div>
+            `;
+        }
+
+        function setupAnswerListeners() {
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const qIndex = parseInt(this.dataset.question);
+                    const aIndex = parseInt(this.dataset.answer);
+
+                    state.answers[qIndex] = aIndex;
+
+                    document.querySelectorAll(`[data-question="${qIndex}"]`).forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    this.querySelector('input').checked = true;
+                });
+            });
+        }
+
+        function submitQuiz() {
+            const { quiz, answers } = state;
+            const unanswered = quiz.questions.length - Object.keys(answers).length;
+
+            if (unanswered > 0) {
+                if (!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) {
+                    return;
+                }
+            }
+
+            state.submitted = true;
+            renderQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function retakeQuiz() {
+            state.quiz.questions = shuffleQuiz(state.originalQuestions);
+            state.answers = {};
+            state.submitted = false;
+            renderQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

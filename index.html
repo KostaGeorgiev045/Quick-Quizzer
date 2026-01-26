@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz App</title>
     <style>
+        :root {
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #fff;
+            --bg-tertiary: #f8f9fa;
+            --bg-hover: #e9ecef;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-heading: #2c3e50;
+            --border-color: rgba(0,0,0,0.1);
+            --code-bg: #f4f4f4;
+            --selected-bg: #ebf5fb;
+        }
+
+        body.dark-mode {
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #141414;
+            --bg-tertiary: #1a1a1a;
+            --bg-hover: #222;
+            --text-primary: #ccc;
+            --text-secondary: #888;
+            --text-heading: #ddd;
+            --border-color: rgba(255,255,255,0.05);
+            --code-bg: #1a1a1a;
+            --selected-bg: #1a2a3a;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,8 +39,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #f5f5f5;
-            color: #333;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
         }
@@ -29,20 +55,26 @@
             text-align: center;
             margin-bottom: 30px;
             padding: 20px;
-            background: #fff;
+            background: var(--bg-secondary);
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--border-color);
             position: relative;
         }
 
-        .info-btn {
+        .header-buttons {
             position: absolute;
             top: 15px;
             right: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .info-btn,
+        .dark-mode-btn {
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: #3498db;
+            background: #555;
             color: #fff;
             border: none;
             font-size: 16px;
@@ -53,8 +85,9 @@
             justify-content: center;
         }
 
-        .info-btn:hover {
-            background: #2980b9;
+        .info-btn:hover,
+        .dark-mode-btn:hover {
+            background: #666;
         }
 
         .info-panel {
@@ -63,9 +96,9 @@
             top: 50px;
             right: 15px;
             width: 320px;
-            background: #fff;
+            background: var(--bg-secondary);
             border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 20px var(--border-color);
             padding: 15px;
             text-align: left;
             z-index: 100;
@@ -78,24 +111,25 @@
 
         .info-panel h3 {
             margin-bottom: 10px;
-            color: #2c3e50;
+            color: var(--text-heading);
             font-size: 1rem;
         }
 
         .info-panel p {
             margin-bottom: 8px;
-            color: #555;
+            color: var(--text-secondary);
         }
 
         .info-panel code {
-            background: #f4f4f4;
+            background: var(--code-bg);
             padding: 2px 5px;
             border-radius: 3px;
             font-size: 0.8rem;
         }
 
         .info-panel pre {
-            background: #f4f4f4;
+            background: var(--code-bg);
+            color: var(--text-primary);
             padding: 10px;
             border-radius: 5px;
             overflow-x: auto;
@@ -104,7 +138,7 @@
         }
 
         h1 {
-            color: #2c3e50;
+            color: var(--text-heading);
             font-size: 1.8rem;
             margin-bottom: 15px;
         }
@@ -123,12 +157,19 @@
             color: #fff;
             border-radius: 6px;
             cursor: pointer;
-            transition: background 0.2s;
             font-weight: 500;
         }
 
         .file-upload label:hover {
             background: #2980b9;
+        }
+
+        body.dark-mode .file-upload label {
+            background: #444;
+        }
+
+        body.dark-mode .file-upload label:hover {
+            background: #555;
         }
 
         .file-upload input[type="file"] {
@@ -137,12 +178,12 @@
 
         .file-name {
             font-size: 0.9rem;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .quiz-title {
             font-size: 1.5rem;
-            color: #2c3e50;
+            color: var(--text-heading);
             text-align: center;
             margin-bottom: 25px;
             padding-bottom: 15px;
@@ -153,14 +194,15 @@
             text-align: center;
             padding: 20px;
             margin-bottom: 25px;
-            background: #fff;
+            background: var(--bg-secondary);
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--border-color);
         }
 
         .score-display h2 {
             font-size: 2rem;
             margin-bottom: 10px;
+            color: var(--text-heading);
         }
 
         .score-display.excellent {
@@ -177,21 +219,17 @@
 
         .score-percentage {
             font-size: 1.2rem;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .question-card {
-            background: #fff;
+            background: var(--bg-secondary);
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            box-shadow: 0 2px 10px var(--border-color);
         }
 
-        .question-card:hover {
-            transform: translateY(-2px);
-        }
 
         .question-number {
             font-size: 0.85rem;
@@ -204,7 +242,7 @@
             font-size: 1.1rem;
             font-weight: 500;
             margin-bottom: 15px;
-            color: #2c3e50;
+            color: var(--text-heading);
         }
 
         .answers {
@@ -217,15 +255,14 @@
             display: flex;
             align-items: center;
             padding: 12px 15px;
-            background: #f8f9fa;
+            background: var(--bg-tertiary);
             border-radius: 6px;
             cursor: pointer;
-            transition: background 0.2s;
             border: 2px solid transparent;
         }
 
         .answer-option:hover {
-            background: #e9ecef;
+            background: var(--bg-hover);
         }
 
         .answer-option input[type="radio"],
@@ -238,7 +275,7 @@
 
         .multi-select-hint {
             font-size: 0.85rem;
-            color: #666;
+            color: var(--text-secondary);
             font-style: italic;
             margin-top: -5px;
             margin-bottom: 10px;
@@ -247,11 +284,12 @@
         .answer-option label {
             cursor: pointer;
             flex: 1;
+            color: var(--text-primary);
         }
 
         .answer-option.selected {
             border-color: #3498db;
-            background: #ebf5fb;
+            background: var(--selected-bg);
         }
 
         /* Results mode styling */
@@ -269,6 +307,10 @@
             border-color: #28a745;
         }
 
+        .answer-option.correct label {
+            color: #155724;
+        }
+
         .answer-option.correct::after {
             content: '✓';
             margin-left: auto;
@@ -280,6 +322,10 @@
         .answer-option.wrong {
             background: #f8d7da;
             border-color: #dc3545;
+        }
+
+        .answer-option.wrong label {
+            color: #721c24;
         }
 
         .answer-option.wrong::after {
@@ -295,12 +341,55 @@
             border-color: #28a745;
         }
 
+        .answer-option.show-correct label {
+            color: #155724;
+        }
+
         .answer-option.show-correct::after {
             content: '← Correct';
             margin-left: auto;
             color: #28a745;
             font-weight: 500;
             font-size: 0.9rem;
+        }
+
+        body.dark-mode .answer-option.correct {
+            background: #1a3d1a;
+            border-color: #2d6a2d;
+        }
+
+        body.dark-mode .answer-option.correct label {
+            color: #a5d6a5;
+        }
+
+        body.dark-mode .answer-option.correct::after {
+            color: #6fbf6f;
+        }
+
+        body.dark-mode .answer-option.wrong {
+            background: #4a1c1c;
+            border-color: #b33;
+        }
+
+        body.dark-mode .answer-option.wrong label {
+            color: #f8a0a0;
+        }
+
+        body.dark-mode .answer-option.wrong::after {
+            color: #f66;
+        }
+
+        body.dark-mode .answer-option.show-correct {
+            background: #1a3d1a;
+            border-color: #2d6a2d;
+        }
+
+        body.dark-mode .answer-option.show-correct label {
+            color: #a5d6a5;
+        }
+
+        body.dark-mode .answer-option.show-correct::after {
+            color: #6fbf6f;
         }
 
         .button-container {
@@ -316,7 +405,6 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .btn-primary {
@@ -326,7 +414,6 @@
 
         .btn-primary:hover {
             background: #2980b9;
-            transform: translateY(-2px);
         }
 
         .btn-success {
@@ -336,7 +423,6 @@
 
         .btn-success:hover {
             background: #219a52;
-            transform: translateY(-2px);
         }
 
         .btn-secondary {
@@ -347,15 +433,30 @@
 
         .btn-secondary:hover {
             background: #5a6268;
-            transform: translateY(-2px);
+        }
+
+        body.dark-mode .btn-primary {
+            background: #2a6a9e;
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: #3a7ab0;
+        }
+
+        body.dark-mode .btn-success {
+            background: #1e8449;
+        }
+
+        body.dark-mode .btn-success:hover {
+            background: #27a05a;
         }
 
         .placeholder {
             text-align: center;
             padding: 60px 20px;
-            background: #fff;
+            background: var(--bg-secondary);
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--border-color);
         }
 
         .placeholder-icon {
@@ -364,7 +465,7 @@
         }
 
         .placeholder p {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 1.1rem;
         }
 
@@ -377,6 +478,11 @@
             text-align: center;
         }
 
+        body.dark-mode .error-message {
+            background: #4a1f24;
+            color: #f8d7da;
+        }
+
         .hidden {
             display: none;
         }
@@ -386,7 +492,7 @@
             bottom: 10px;
             right: 15px;
             font-size: 0.7rem;
-            color: #999;
+            color: var(--text-secondary);
         }
 
         @media (max-width: 600px) {
@@ -424,7 +530,10 @@
 <body>
     <div class="container">
         <header>
-            <button class="info-btn" id="info-btn">i</button>
+            <div class="header-buttons">
+                <button class="dark-mode-btn" id="dark-mode-btn" title="Toggle dark mode">&#9790;</button>
+                <button class="info-btn" id="info-btn">i</button>
+            </div>
             <div class="info-panel" id="info-panel">
                 <h3>How to Use</h3>
                 <p>Load a JSON file with your quiz questions. Questions and answers are shuffled each attempt.</p>
@@ -465,6 +574,13 @@
     <div class="vibe-coded">vibe coded</div>
 
     <script>
+        // Dark mode toggle
+        const darkModeBtn = document.getElementById('dark-mode-btn');
+        darkModeBtn.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            darkModeBtn.innerHTML = document.body.classList.contains('dark-mode') ? '\u2600' : '\u263E';
+        });
+
         const state = {
             quiz: null,
             originalQuestions: null,
@@ -641,11 +757,14 @@
 
         function renderQuestion(q, qIndex) {
             const questionId = q.id || qIndex + 1;
-            const selectedAnswers = state.answers[qIndex] || [];
+            const selectedAnswers = state.answers[qIndex];
             const { submitted } = state;
             const isMultiCorrect = Array.isArray(q.correct);
             const correctSet = isMultiCorrect ? new Set(q.correct) : new Set([q.correct]);
-            const selectedSet = new Set(Array.isArray(selectedAnswers) ? selectedAnswers : [selectedAnswers]);
+            const hasSelection = selectedAnswers !== undefined;
+            const selectedSet = hasSelection
+                ? new Set(Array.isArray(selectedAnswers) ? selectedAnswers : [selectedAnswers])
+                : new Set();
 
             let html = `
                 <div class="question-card">
